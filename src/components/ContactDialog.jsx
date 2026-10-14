@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cx } from "../lib/cx";
-import { btn, btnDark, btnMd, btnSoft, serif } from "../lib/styles";
+import { btn, btnDark, btnMd, btnSoft, heading } from "../lib/styles";
 import { CloseIcon } from "./icons";
 
 const field = "mt-3 grid gap-[5px] text-[12px] text-muted";
@@ -45,7 +45,7 @@ export default function ContactDialog({ email, onClose, onCopyEmail }) {
       >
         <div className="mb-1.5 flex items-start justify-between gap-3">
           <div>
-            <h2 id="contact-dialog-title" className={cx(serif, "m-0 text-[24px]")}>
+            <h2 id="contact-dialog-title" className={cx(heading, "m-0 text-[24px]")}>
               Say hello
             </h2>
             {/* Same look as `prose`, but with its own margins (mixing margin classes is unreliable). */}

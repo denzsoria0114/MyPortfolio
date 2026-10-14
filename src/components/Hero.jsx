@@ -1,28 +1,27 @@
+import { useRef } from "react";
+import { useFitOneLine } from "../hooks/useFitOneLine";
 import { cx } from "../lib/cx";
-import { serif } from "../lib/styles";
+import { heading } from "../lib/styles";
 import HeroArt from "./HeroArt";
 import Logo from "./Logo";
 import { ArrowRightIcon } from "./icons";
 
 export default function Hero({ profile, reducedMotion, onViewExperience }) {
   const { name, headline, tagline, heroQuips, experience, labels } = profile;
-  // "Currently <title> at <company>" from the latest role, if it is ongoing.
-  const latest = experience[0]?.roles[0];
-  const current = latest && /^(present|now|current)$/i.test(latest.end.trim()) ? latest : null;
+  // The headline always stays on one line, shrinking only when the screen is too narrow.
+  const headlineRef = useRef(null);
+  useFitOneLine(headlineRef, [headline]);
   return (
     <header className="grid justify-items-center pt-6 pb-[52px] text-center wide:pt-[34px] split:pt-11">
       <HeroArt quips={heroQuips} reducedMotion={reducedMotion} />
-      <h1 className={cx(serif, "mt-[18px] mb-3 text-[40px] leading-[1.05] text-balance wide:text-[44px]")}>
+      <h1
+        ref={headlineRef}
+        className={cx(heading, "mt-[18px] mb-3 w-max text-[40px] leading-[1.05] whitespace-nowrap wide:text-[44px]")}
+      >
         <span className="sr-only">{name}, </span>
         {headline}
       </h1>
       {tagline && <p className="mx-auto mb-[22px] max-w-[44ch] text-[14px] leading-[1.6] text-muted">{tagline}</p>}
-      {current && (
-        <p className="-mt-2.5 mb-[22px] text-[12.5px] text-muted">
-          {labels.currently} <span className="text-ink">{current.title}</span> at{" "}
-          <span className="text-ink">{experience[0].company}</span>
-        </p>
-      )}
       {experience.length > 0 && (
         <button
           type="button"

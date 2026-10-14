@@ -7,9 +7,10 @@ export const btnSm = "h-[34px] gap-[7px] px-[13px] text-[12px]";
 export const btnDark = "bg-ink text-paper hover:bg-ink-hover";
 export const btnSoft = "bg-soft2 text-ink hover:bg-soft3";
 
-export const serif = "font-serif font-normal tracking-[-0.01em]";
-export const h2 = `${serif} m-0 mb-4 text-[28px] leading-[1.15]`;
-export const h3 = `${serif} m-0 text-[17px] leading-[1.25]`;
+// Headings: medium weight with slightly tightened spacing.
+export const heading = "font-heading font-medium tracking-[-0.02em]";
+export const h2 = `${heading} m-0 mb-4 text-[28px] leading-[1.15]`;
+export const h3 = `${heading} m-0 text-[17px] leading-[1.25]`;
 export const prose = "m-0 mb-3 max-w-[60ch] text-[13.5px] leading-[1.7] text-muted";
 export const itemText = "mt-2.5 max-w-[60ch] text-[12.5px] leading-[1.65] text-muted";
 export const bullets =

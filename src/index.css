@@ -52,8 +52,10 @@
   --color-soft2: var(--soft2);
   --color-soft3: var(--soft3);
 
-  --font-serif: "Iowan Old Style", "Palatino Linotype", "URW Palladio L", P052, Palatino, "Book Antiqua", Georgia, serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Poppins everywhere (self-hosted via @fontsource/poppins, imported in main.jsx).
+     To use another font, change these two lines and the imports. */
+  --font-heading: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 @theme {

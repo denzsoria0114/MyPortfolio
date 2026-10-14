@@ -127,7 +127,7 @@ export default function App() {
       <div inert={dialogOpen} className="grid grid-cols-[minmax(0,1fr)] split:grid-cols-[minmax(260px,300px)_minmax(0,1fr)]">
         <Sidebar profile={p} cvBusy={cvBusy} onDownloadCv={onDownloadCv} onCopyEmail={copyEmail} />
 
-        <div className="relative min-w-0">
+        <div className="relative min-w-0" data-fit-bounds>
           <Navbar
             sections={sections}
             active={active}

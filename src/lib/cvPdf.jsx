@@ -1,18 +1,19 @@
 // The downloadable PDF CV, built from src/data/profile.js with @react-pdf/renderer.
 // This file is only loaded when someone clicks "Download CV", so it doesn't slow the site down.
 //
-// Design: a print version of the portfolio — serif headings, the accent color used
+// Design: a print version of the portfolio — Poppins throughout, the accent color used
 // sparingly, company logos with a timeline, and the signature at the end.
 
 import { Document, Font, Link, Page, Path, StyleSheet, Svg, Text, View, pdf } from "@react-pdf/renderer";
-import serif400 from "../assets/fonts/source-serif-4-latin-400-normal.woff";
-import serif600 from "../assets/fonts/source-serif-4-latin-600-normal.woff";
-import serifItalic from "../assets/fonts/source-serif-4-latin-400-italic.woff";
+// Same font as the site (react-pdf needs .woff rather than .woff2).
+import poppins400 from "@fontsource/poppins/files/poppins-latin-400-normal.woff";
+import poppins500 from "@fontsource/poppins/files/poppins-latin-500-normal.woff";
+import poppins600 from "@fontsource/poppins/files/poppins-latin-600-normal.woff";
 import { duration } from "./dates";
 
 Font.register({
-  family: "Serif",
-  fonts: [{ src: serif400 }, { src: serif600, fontWeight: 600 }, { src: serifItalic, fontStyle: "italic" }],
+  family: "Poppins",
+  fonts: [{ src: poppins400 }, { src: poppins500, fontWeight: 500 }, { src: poppins600, fontWeight: 600 }],
 });
 // Keep words whole instead of hyphenating them.
 Font.registerHyphenationCallback((word) => [word]);
@@ -32,14 +33,14 @@ const s = StyleSheet.create({
     paddingTop: 46,
     paddingBottom: 58,
     paddingHorizontal: 50,
-    fontFamily: "Helvetica",
-    fontSize: 9.2,
+    fontFamily: "Poppins",
+    fontSize: 8.8,
     color: C.text,
   },
 
   // header
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 24 },
-  name: { fontFamily: "Serif", fontWeight: 600, fontSize: 27, lineHeight: 1.1, color: C.ink, letterSpacing: -0.3 },
+  name: { fontWeight: 500, fontSize: 26, lineHeight: 1.1, color: C.ink, letterSpacing: -0.3 },
   role: { fontSize: 11, color: C.muted, marginTop: 2 },
   contact: { alignItems: "flex-end", gap: 2.5, fontSize: 8.6 },
   contactLink: { color: C.text, textDecoration: "none" },
@@ -50,7 +51,7 @@ const s = StyleSheet.create({
   // sections
   section: { marginTop: 18 },
   sectionHead: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 9 },
-  h2: { fontFamily: "Serif", fontWeight: 600, fontSize: 13.5, color: C.ink },
+  h2: { fontWeight: 500, fontSize: 13, color: C.ink },
   headLine: { flexGrow: 1, height: 0.75, backgroundColor: C.line },
   // Line height is set in points, only on wrapping text (react-pdf scales multipliers twice).
   paragraph: { color: C.text, lineHeight: "13.4pt" },
@@ -72,11 +73,11 @@ const s = StyleSheet.create({
   company: { flexDirection: "row", gap: 11, marginBottom: 12 },
   rail: { width: 16, alignItems: "center" },
   logo: { width: 16, height: 16, borderRadius: 3.5, alignItems: "center", justifyContent: "center" },
-  logoText: { color: "#ffffff", fontFamily: "Helvetica-Bold", fontSize: 8 },
+  logoText: { color: "#ffffff", fontWeight: 600, fontSize: 7.5 },
   railLine: { flexGrow: 1, width: 0.75, backgroundColor: C.line, marginTop: 4, marginBottom: 2 },
   roles: { flex: 1, gap: 10 },
   itemHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 },
-  h3: { fontFamily: "Serif", fontWeight: 600, fontSize: 11.5, color: C.ink },
+  h3: { fontWeight: 500, fontSize: 11, color: C.ink },
   meta: { fontSize: 8.6, color: C.muted, marginTop: 1.5 },
   dates: { fontSize: 8.6, color: C.text, textAlign: "right" },
   duration: { fontSize: 7.6, color: C.muted, textAlign: "right", marginTop: 1 },
@@ -90,7 +91,7 @@ const s = StyleSheet.create({
 
   // skills
   skillRow: { flexDirection: "row", gap: 12, marginBottom: 7 },
-  skillGroup: { width: 86, fontFamily: "Serif", fontWeight: 600, fontSize: 10, color: C.ink, paddingTop: 1 },
+  skillGroup: { width: 86, fontWeight: 500, fontSize: 9.5, color: C.ink, paddingTop: 1 },
 
   // closing
   closing: { marginTop: 22, alignItems: "flex-end" },

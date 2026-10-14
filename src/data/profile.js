@@ -256,7 +256,6 @@ export const profile = {
     viewExperience: "View Experience",
     downloadCv: "Download CV",
     preparingCv: "Preparing CV…",
-    currently: "Currently",
     skipToContent: "Skip to content",
     all: "All",
   },

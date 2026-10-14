@@ -2,7 +2,7 @@ import { useInView } from "../hooks/useInView";
 import { cx } from "../lib/cx";
 import { h2 } from "../lib/styles";
 
-/** A content section with a top rule, serif heading and a fade-up reveal on first view.
+/** A content section with a top rule, heading and a fade-up reveal on first view.
  *  `children` may be a function that receives whether the section has been seen. */
 export default function Section({ id, title, className, children }) {
   const [ref, inView] = useInView();

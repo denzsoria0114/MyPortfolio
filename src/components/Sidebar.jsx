@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { prefetchCvBuilder } from "../lib/cv";
 import { signature } from "../lib/signature";
-import { btn, btnDark, btnMd, btnSoft, serif } from "../lib/styles";
+import { btn, btnDark, btnMd, btnSoft, heading } from "../lib/styles";
 import { cx } from "../lib/cx";
 import Avatar from "./Avatar";
 import { DetailIcon, DownloadIcon, SocialIcon } from "./icons";
@@ -90,7 +90,7 @@ export default function Sidebar({ profile, cvBusy, onDownloadCv, onCopyEmail }) 
         <Avatar src={avatarSrc} name={name} colors={avatarIllustration} />
         <div>
           {/* The page's main heading (in the hero) carries the name for screen readers. */}
-          <p className={cx(serif, "m-0 text-[24px] leading-[1.1]")}>{name}</p>
+          <p className={cx(heading, "m-0 text-[24px] leading-[1.1]")}>{name}</p>
           <p className="mt-[3px] text-[12.5px] text-muted">{role}</p>
         </div>
       </div>
