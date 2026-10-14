@@ -16,8 +16,9 @@ export const profile = {
   role: "Digital Solutions Analyst",
   bio: "Building Power Platform solutions that automate workflows and help teams work faster, with clearer controls.",
 
-  // Put a square photo at public/avatar.jpg to replace the illustration.
-  avatarSrc: "/avatar.jpg",
+  // Profile photo (any image in src/assets; it's cropped to a square).
+  // Set to null to show the illustrated avatar instead.
+  avatarSrc: new URL("../assets/doggienice.jpg", import.meta.url).href,
   // Colors for the illustrated avatar shown when no photo is found.
   avatarIllustration: {
     skin: "#c68e6e",
