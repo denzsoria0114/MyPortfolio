@@ -18,7 +18,8 @@ npm run preview  # serve the production build on http://localhost:4174
 | --- | --- |
 | All text & content | `src/data/profile.js` |
 | Your photo | `public/avatar.jpg` (square, ≥ 160×160) |
-| Your CV | `public/cv.pdf` (without it, a .txt CV is generated) |
+| Your CV | Built automatically as a designed PDF from `profile.js` (layout in `src/lib/cvPdf.jsx`). To hand out your own file instead, add `public/cv.pdf` |
+| Your signature | `src/data/signature.js` (traced from `src/assets/Denz e-signature.png`) |
 | Colors (accent, paper, ink) | top of `src/index.css` |
 | Fonts | `--font-serif` / `--font-sans` in `src/index.css` |
 | Page title, search & link previews | `seo` in `profile.js` (set `siteUrl` once live) |

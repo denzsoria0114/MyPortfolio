@@ -44,24 +44,48 @@ function SkillList({ items, tab, tabCount, inView, reducedMotion }) {
     };
   }, [tab, inView, reducedMotion]);
 
-  const list = (
-    <ul className="grid gap-1">
-      {items.map((s) => (
+  // Skills with a level get a meter row; the rest are shown as simple tags.
+  const rated = items.filter((s) => s.level != null);
+  const tags = items.filter((s) => s.level == null);
+  const tagList = tags.length > 0 && (
+    <ul className={cx("flex flex-wrap gap-2", rated.length > 0 && "mt-4")}>
+      {tags.map((s) => (
         <li
           key={tab + s.name}
-          className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-dashed border-line py-[9px]"
+          className="inline-flex h-8 items-center gap-2 rounded-[3px] bg-soft2 px-3 text-[12.5px] text-ink"
         >
-          <span className="text-[13px]">
-            {s.name}
-            {s.years ? (
-              <small className="ml-2 text-[11px] text-muted">{s.years + (s.years === 1 ? " yr" : " yrs")}</small>
-            ) : null}
-          </span>
-          <span className="text-right text-[11px] text-muted">{levelLabel(s.level)}</span>
-          <Meter level={s.level} lit={lit} />
+          {s.name}
+          {s.years ? (
+            <small className="text-[11px] text-muted">{s.years + (s.years === 1 ? " yr" : " yrs")}</small>
+          ) : null}
         </li>
       ))}
     </ul>
+  );
+
+  const list = (
+    <>
+      {rated.length > 0 && (
+        <ul className="grid gap-1">
+          {rated.map((s) => (
+            <li
+              key={tab + s.name}
+              className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-b border-dashed border-line py-[9px]"
+            >
+              <span className="text-[13px]">
+                {s.name}
+                {s.years ? (
+                  <small className="ml-2 text-[11px] text-muted">{s.years + (s.years === 1 ? " yr" : " yrs")}</small>
+                ) : null}
+              </span>
+              <span className="text-right text-[11px] text-muted">{levelLabel(s.level)}</span>
+              <Meter level={s.level} lit={lit} />
+            </li>
+          ))}
+        </ul>
+      )}
+      {tagList}
+    </>
   );
   if (tabCount < 2) return list;
   return (
@@ -83,7 +107,15 @@ export default function Skills({ profile, reducedMotion }) {
   const onKeyDown = (e, i) => {
     const n = names.length;
     const next =
-      e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : null;
+      e.key === "ArrowRight"
+        ? (i + 1) % n
+        : e.key === "ArrowLeft"
+          ? (i - 1 + n) % n
+          : e.key === "Home"
+            ? 0
+            : e.key === "End"
+              ? n - 1
+              : null;
     if (next === null) return;
     e.preventDefault();
     setTab(next);
@@ -127,7 +159,13 @@ export default function Skills({ profile, reducedMotion }) {
               ))}
             </div>
           )}
-          <SkillList items={items} tab={tab} tabCount={names.length - 1} inView={inView} reducedMotion={reducedMotion} />
+          <SkillList
+            items={items}
+            tab={tab}
+            tabCount={names.length - 1}
+            inView={inView}
+            reducedMotion={reducedMotion}
+          />
         </>
       )}
     </Section>

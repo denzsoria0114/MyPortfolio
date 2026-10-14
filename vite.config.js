@@ -59,4 +59,6 @@ export default defineConfig({
   // 5173 is used by another project. If 5174 is busy, Vite tries 5175, 5176, …
   server: { port: 5174 },
   preview: { port: 4174 },
+  // The PDF library behind "Download CV" is large but loads only on demand.
+  build: { chunkSizeWarningLimit: 1400 },
 });

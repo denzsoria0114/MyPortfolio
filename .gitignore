@@ -1,3 +1,6 @@
 node_modules
 dist
 *.local
+
+# Original e-signature image: kept local only (the site uses the traced src/data/signature.js)
+src/assets/Denz e-signature.png

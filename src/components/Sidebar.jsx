@@ -1,14 +1,49 @@
 import { useMemo, useState } from "react";
+import { prefetchCvBuilder } from "../lib/cv";
 import { signature } from "../lib/signature";
 import { btn, btnDark, btnMd, btnSoft, serif } from "../lib/styles";
 import { cx } from "../lib/cx";
 import Avatar from "./Avatar";
-import { AvailabilityBadge } from "./Contact";
 import { DetailIcon, DownloadIcon, SocialIcon } from "./icons";
 
-function Signature({ name, className }) {
-  const sig = useMemo(() => signature(name), [name]);
-  // Changing the key remounts the path, which replays the drawing animation.
+const DRAW_DELAY = 0.3; // seconds before the pen starts
+const DRAW_TIME = 3; // seconds of actual drawing, shared by all strokes
+const PEN_LIFT = 0.15; // pause between strokes
+
+/** Draws the signature stroke by stroke, like a pen. Uses the traced signature when given. */
+function Signature({ name, traced, className }) {
+  const sig = useMemo(() => {
+    if (traced) {
+      const [, , w, h] = traced.viewBox.split(" ").map(Number);
+      const height = 104;
+      return { ...traced, width: (height * w) / h, height };
+    }
+    const g = signature(name);
+    return {
+      viewBox: `0 0 ${g.width} 52`,
+      width: g.width * 1.25,
+      height: 65,
+      strokeWidth: 1.35,
+      strokes: [{ d: g.d, length: 1 }],
+    };
+  }, [name, traced]);
+
+  // Each stroke gets a share of the drawing time in proportion to its length.
+  const total = sig.strokes.reduce((sum, s) => sum + s.length, 0);
+  let start = DRAW_DELAY;
+  const timing = sig.strokes.map((s) => {
+    const duration = (DRAW_TIME * s.length) / total;
+    // A gentle ease so long strokes keep an even, handwritten pace.
+    const t = {
+      animationDelay: `${start}s`,
+      animationDuration: `${duration}s`,
+      animationTimingFunction: "cubic-bezier(.4,0,.4,1)",
+    };
+    start += duration + PEN_LIFT;
+    return t;
+  });
+
+  // Changing the key remounts the paths, which replays the drawing animation.
   const [take, setTake] = useState(0);
   return (
     <button
@@ -18,17 +53,21 @@ function Signature({ name, className }) {
       aria-label={`Signature of ${name}. Click to sign again.`}
       title="Sign again"
     >
-      <svg key={take} viewBox={`0 0 ${sig.width} 52`} width={sig.width * 1.25} height={65} aria-hidden="true">
-        <path
-          d={sig.d}
-          pathLength={1}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.35}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="[stroke-dasharray:1] [stroke-dashoffset:0] motion-safe:animate-write"
-        />
+      <svg key={take} viewBox={sig.viewBox} width={sig.width} height={sig.height} aria-hidden="true">
+        {sig.strokes.map((s, i) => (
+          <path
+            key={i}
+            d={s.d}
+            pathLength={1}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={sig.strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={timing[i]}
+            className="[stroke-dasharray:1] [stroke-dashoffset:0] motion-safe:animate-write"
+          />
+        ))}
       </svg>
     </button>
   );
@@ -36,9 +75,8 @@ function Signature({ name, className }) {
 
 // Below 880px the sidebar sits above the content, so it is compacted there:
 // no signature, details on one wrapping line, and socials + buttons on one row.
-export default function Sidebar({ profile, hasCvFile, onDownloadCv, onCopyEmail }) {
-  const { name, role, bio, avatarSrc, avatarIllustration, showSignature, details, socials, email, contact, labels } =
-    profile;
+export default function Sidebar({ profile, cvBusy, onDownloadCv, onCopyEmail }) {
+  const { name, role, bio, avatarSrc, avatarIllustration, showSignature, details, socials, email, labels } = profile;
   return (
     <aside
       aria-label="Profile"
@@ -59,18 +97,25 @@ export default function Sidebar({ profile, hasCvFile, onDownloadCv, onCopyEmail 
 
       {bio && <p className="max-w-[34ch] text-[13px] leading-[1.6] text-muted">{bio}</p>}
 
-      {contact.available && <AvailabilityBadge label={contact.availableLabel} />}
-
-      {showSignature && <Signature name={name} className="hidden split:block" />}
+      {showSignature && <Signature name={name} traced={profile.signature} className="hidden split:block" />}
 
       <hr className="m-0 h-px border-0 bg-line" />
 
       {details.length > 0 && (
-        <ul className="flex flex-wrap gap-x-4 gap-y-[7px] text-[12.5px] split:grid">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-[7px] text-[12.5px] split:grid">
           {details.map((d) => (
-            <li key={d.label} className="flex items-center gap-[9px]">
-              <DetailIcon icon={d.icon} />
-              {d.label}
+            <li key={d.label}>
+              {d.href ? (
+                <a href={d.href} className="flex items-center gap-[9px] hover:text-accent-text pointer-coarse:py-1.5">
+                  <DetailIcon icon={d.icon} />
+                  {d.label}
+                </a>
+              ) : (
+                <span className="flex items-center gap-[9px]">
+                  <DetailIcon icon={d.icon} />
+                  {d.label}
+                </span>
+              )}
             </li>
           ))}
         </ul>
@@ -96,9 +141,16 @@ export default function Sidebar({ profile, hasCvFile, onDownloadCv, onCopyEmail 
           </ul>
         )}
         <div className="flex grow basis-[216px] gap-1.5 split:grid split:grid-cols-[1fr_44px]">
-          <button type="button" className={cx("group flex-1", btn, btnMd, btnDark)} onClick={onDownloadCv}>
+          <button
+            type="button"
+            className={cx("group flex-1", btn, btnMd, btnDark, cvBusy && "cursor-progress opacity-80")}
+            onClick={onDownloadCv}
+            onPointerEnter={prefetchCvBuilder}
+            onFocus={prefetchCvBuilder}
+            aria-busy={cvBusy}
+          >
             <DownloadIcon className="transition-transform duration-[250ms] group-hover:translate-y-0.5" />
-            {hasCvFile ? labels.downloadCv : labels.downloadCvText}
+            {cvBusy ? labels.preparingCv : labels.downloadCv}
           </button>
           <button
             type="button"

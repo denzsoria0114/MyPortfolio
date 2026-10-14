@@ -4,7 +4,9 @@ import { LogoGlyph } from "./icons";
 /** Colored square (or circle) with a white glyph or initials. */
 export default function Logo({ logo, name, size = 22, round = false, className }) {
   const color = logo?.color ?? "#6b6b6b";
-  const text = logo?.text ?? (logo?.glyph ? "" : name.trim().charAt(0).toUpperCase());
+  let text = logo?.text ?? (logo?.glyph ? "" : name.trim().charAt(0).toUpperCase());
+  // Small logos only have room for one letter.
+  if (size < 22) text = text.charAt(0);
   return (
     <span
       className={cx("grid shrink-0 place-items-center overflow-hidden", round ? "rounded-full" : "rounded", className)}

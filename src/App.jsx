@@ -42,7 +42,7 @@ export default function App() {
     document.title = `${p.name} — ${p.role}`;
   }, [p.name, p.role]);
 
-  // Is there a real CV file (public/cv.pdf)? If not, the button offers a generated .txt.
+  // Did you add your own CV file (public/cv.pdf)? If not, a PDF is built from profile.js.
   const [hasCvFile, setHasCvFile] = useState(false);
   useEffect(() => {
     cvFileExists(p.cvUrl).then(setHasCvFile);
@@ -67,7 +67,19 @@ export default function App() {
     }
   }, [p.email, showToast]);
 
-  const onDownloadCv = () => showToast(downloadCv(p, hasCvFile));
+  const [cvBusy, setCvBusy] = useState(false);
+  const onDownloadCv = async () => {
+    if (cvBusy) return;
+    setCvBusy(true);
+    try {
+      showToast(await downloadCv(p, hasCvFile));
+    } catch (err) {
+      console.error(err);
+      showToast("Couldn't create the CV. Please try again.");
+    } finally {
+      setCvBusy(false);
+    }
+  };
 
   // --- navigation ----------------------------------------------------
   const scrollToSection = useCallback(
@@ -113,7 +125,7 @@ export default function App() {
         {p.labels.skipToContent}
       </a>
       <div inert={dialogOpen} className="grid grid-cols-[minmax(0,1fr)] split:grid-cols-[minmax(260px,300px)_minmax(0,1fr)]">
-        <Sidebar profile={p} hasCvFile={hasCvFile} onDownloadCv={onDownloadCv} onCopyEmail={copyEmail} />
+        <Sidebar profile={p} cvBusy={cvBusy} onDownloadCv={onDownloadCv} onCopyEmail={copyEmail} />
 
         <div className="relative min-w-0">
           <Navbar

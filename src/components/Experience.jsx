@@ -14,10 +14,12 @@ export function ItemHead({ title, meta, start, end, now }) {
         <h3 className={h3}>{title}</h3>
         <p className="mt-0.5 text-[12px] text-muted">{meta}</p>
       </div>
-      <p className="shrink-0 text-right text-[11.5px] whitespace-nowrap text-muted">
-        {start} – {end}
-        <small className="block h-[15px] text-[10.5px] text-muted">{duration(start, end, now)}</small>
-      </p>
+      {(start || end) && (
+        <p className="shrink-0 text-right text-[11.5px] whitespace-nowrap text-muted">
+          {[start, end].filter(Boolean).join(" – ")}
+          <small className="block h-[15px] text-[10.5px] text-muted">{start && end && duration(start, end, now)}</small>
+        </p>
+      )}
     </div>
   );
 }
@@ -48,19 +50,16 @@ function Role({ company, role, first, filter, onPickSkill, now }) {
       )}
       <ItemHead
         title={role.title}
-        meta={
-          <>
-            {company}
-            {role.type && (
-              <>
-                <span aria-hidden="true" className="mx-[5px] opacity-70">
-                  •
-                </span>
-                {role.type}
-              </>
+        meta={[company, role.type, role.location].filter(Boolean).map((part, i) => (
+          <span key={part}>
+            {i > 0 && (
+              <span aria-hidden="true" className="mx-[5px] opacity-70">
+                •
+              </span>
             )}
-          </>
-        }
+            {part}
+          </span>
+        ))}
         start={role.start}
         end={role.end}
         now={now}

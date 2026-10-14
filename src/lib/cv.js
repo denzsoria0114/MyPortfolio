@@ -1,49 +1,5 @@
-// Builds a plain-text CV from the profile data and downloads it.
-
-function buildCvText(p) {
-  const lines = [];
-  const heading = (title) => lines.push("", title.toUpperCase(), "-".repeat(title.length));
-
-  lines.push(p.name, p.role);
-  const contactLine = [p.email, ...p.details.map((d) => d.label)].filter(Boolean).join("  ·  ");
-  if (contactLine) lines.push(contactLine);
-  if (p.bio) lines.push("", p.bio);
-
-  if (p.about.length) {
-    heading("About");
-    lines.push(...p.about);
-  }
-  if (p.experience.length) {
-    heading("Experience");
-    for (const co of p.experience)
-      for (const r of co.roles) {
-        lines.push("", `${r.title} — ${co.company}${r.type ? ` (${r.type})` : ""}`, `${r.start} – ${r.end}`);
-        if (r.summary) lines.push(r.summary);
-        for (const h of r.highlights ?? []) lines.push("  • " + h);
-      }
-  }
-  if (p.projects?.length) {
-    heading("Projects");
-    for (const pr of p.projects) {
-      lines.push("", `${pr.name}${pr.year ? ` (${pr.year})` : ""}`);
-      if (pr.summary) lines.push(pr.summary);
-      if (pr.tags?.length) lines.push("  " + pr.tags.join(", "));
-    }
-  }
-  if (p.education.length) {
-    heading("Education");
-    for (const e of p.education) {
-      lines.push("", `${e.degree} — ${e.school}`, `${e.start} – ${e.end}`);
-      if (e.summary) lines.push(e.summary);
-      for (const n of e.notes ?? []) lines.push("  • " + n);
-    }
-  }
-  if (p.skills.length) {
-    heading("Skills");
-    for (const g of p.skills) lines.push(`${g.name}: ${g.items.map((i) => i.name).join(", ")}`);
-  }
-  return lines.join("\n") + "\n";
-}
+// "Download CV": serves public/cv.pdf when you've added one, otherwise builds a
+// PDF from profile.js (see cvPdf.jsx).
 
 function triggerDownload(href, filename) {
   const a = document.createElement("a");
@@ -68,15 +24,20 @@ export async function cvFileExists(url) {
   }
 }
 
-/** Downloads the CV file when it exists, otherwise a generated .txt CV. Returns a toast message. */
-export function downloadCv(profile, hasFile) {
+/** Starts loading the PDF builder early (e.g. when the button is hovered). */
+export const prefetchCvBuilder = () => import("./cvPdf.jsx").catch(() => {});
+
+/** Downloads the CV as a PDF. Returns a toast message. */
+export async function downloadCv(profile, hasFile) {
+  const filename = `${slug(profile.name)}-cv.pdf`;
   if (hasFile) {
-    const ext = profile.cvUrl.split(".").pop();
-    triggerDownload(profile.cvUrl, `${slug(profile.name)}-cv.${ext}`);
+    triggerDownload(profile.cvUrl, filename);
     return "CV downloaded";
   }
-  const url = URL.createObjectURL(new Blob([buildCvText(profile)], { type: "text/plain;charset=utf-8" }));
-  triggerDownload(url, `${slug(profile.name)}-cv.txt`);
+  // The PDF library is loaded only now, on first click.
+  const { renderCvPdf } = await import("./cvPdf.jsx");
+  const url = URL.createObjectURL(await renderCvPdf(profile));
+  triggerDownload(url, filename);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-  return "Text CV downloaded";
+  return "CV downloaded";
 }
